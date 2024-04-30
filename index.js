@@ -43,6 +43,10 @@ db.connect(err => {
         console.log('Seed.sql executed successfully');
     });
 
+    // Generate Employees
+    // seedEmployees();
+
+    // Start the application
     // start();
 });
 
