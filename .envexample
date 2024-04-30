@@ -1,0 +1,6 @@
+# Fill in your mySQL server info
+
+DB_HOST=localhost
+DB_USER=yourUsername
+DB_PASS=yourPassword
+DB_NAME=employee_tracker_db

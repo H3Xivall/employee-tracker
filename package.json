@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -10,6 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "inquirer": "^9.2.20"
+    "dotenv": "^16.4.5",
+    "inquirer": "^8.2.0",
+    "mysql2": "^3.9.7"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "eslint": "^9.1.1",
+    "globals": "^15.1.0"
   }
 }
