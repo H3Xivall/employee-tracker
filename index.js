@@ -5,6 +5,8 @@ const mysql2 = require('mysql2');
 const fs = require('fs');
 const path = require('path');
 const faker = require('@faker-js/faker');
+const { isPromise } = require('util/types');
+const { parseArgs } = require('util');
 
 // Set up database connection using environment variables
 const db = mysql2.createConnection({
@@ -21,65 +23,80 @@ db.connect(err => {
         return;
     }
 
-    console.log('Connected to MySQL as id:'+ db.threadId);
-
-    // Read and execute the SQL files
-    const schemaSql = fs.readFileSync(path.join('db/schema.sql'), 'utf-8');
-    db.query(schemaSql, (err, results) => {
-        if (err) {
-            console.error('Error executing schema.sql:'+ err.stack);
-            return;
-        }
-
-        console.log('Schema.sql executed successfully');
-    });
-    const seedSql = fs.readFileSync(path.join('db/seed.sql'), 'utf-8');
-    db.query(seedSql, (err, results) => {
-        if (err) {
-            console.error('Error executing seed.sql:' + err.stack);
-            return;
-        }
-
-        console.log('Seed.sql executed successfully');
-    });
-
-    // Generate Employees
-    // seedEmployees();
-
     // Start the application
-    // start();
+    start();
 });
 
 // Start the application function
 
-function start() {
-    inquirer
+async function start() {
+    try {
+        console.log('Connected to MySQL as id:'+ db.threadId);
+        await initDB();
+        console.log('                    --                    ');
+        await welcome();
+
+    } catch (err) {
+        console.error(err.stack);
+        return;
+    }
+
 }
 
 // Function to randomly generate employees
-function seedEmployees() {
-    const employees = [];
-    for (let i = 0; i < 50; i++) {
-        const firstName = faker.name.firstName();
-        const lastName = faker.name.lastName();
-        const role_id = faker.datatype.number({ min: 1, max: 4 });
-        const manager_id = i > 0 ? faker.datatype.number({ min: 1, max: 5 }) : null;
-
-        employees.push([
-            firstName,
-            lastName,
-            role_id,
-            manager_id,
-        ]);
+async function seedEmployees() {
+    try {
+        const employee = [];
+        for (let i = 0; i < 50; i++) {
+            // const rando = faker.fakerEN.datatype.boolean();
+            const gender = faker.fakerEN.person.sexType();
+            const first_name = faker.fakerEN.person.firstName(gender);
+            const last_name = faker.fakerEN.person.lastName(gender);
+            const role_id = faker.fakerEN.number.int({ min: 1, max: 4 });
+            const manager_id = i > 5 ? faker.fakerEN.number.int({ min: 1, max: 5 }) : null;
+    
+            employee.push([
+                first_name,
+                last_name,
+                role_id,
+                manager_id,
+            ]);
+        }
+        // console.log(employee);
+        const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ? ';
+        const results = await db.promise().query(sql, [employee]);
+        console.log(`${results[0].affectedRows} employee records inserted successfully!`);
+    } catch(err) {
+        console.error('Error in seed employees: ' + err.stack);
+        return;
     }
+}
 
-    const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ?';
-    db.query(sql, [employees], (err, results) => {
-        if (err) {
-            console.error('Error seeding employees: ' + err.stack);
+async function initDB() {
+        try {
+            const schemaSql = fs.readFileSync(path.join('db/schema.sql'), 'utf8');
+            await db.promise().query(schemaSql);
+            const seedSql = fs.readFileSync(path.join('db/seed.sql'), 'utf8');
+            await db.promise().query(seedSql);
+            console.log('Database seeded successfully');
+            await seedEmployees();
+        } catch(err) {
+            console.error(err.stack);
             return;
         }
+}
 
-        console.log('Employees seeded successfully');
-    });
+// Welcome text function
+async function welcome() {
+    try {
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('Welcome to the Employee Management System!');
+        console.log('##########################################');
+        console.log('##########################################');
+        console.log('                    --                    ');    
+    } catch(err) {
+        console.error(err.stack);
+        return;
+    }
 }
