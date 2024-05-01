@@ -427,7 +427,7 @@ async function removeRole() {
         console.log('Role removed successfully!');
         await mainMenu();
     } catch(err) {
-        console.error(`Error in remove role: ${err.stack}`);
+        console.error(`Unable to remove initial roles: See Administrators for more information.`);
         return;
     }
 }
@@ -487,7 +487,7 @@ async function removeDepartment() {
         console.log('Department removed successfully!');
         await mainMenu();
     } catch(err) {
-        console.error(`Error in remove department: ${err.stack}`);
+        console.error(`Unable to remove initial roles: See Administrators for more information.`);
         return;
     }
 }
