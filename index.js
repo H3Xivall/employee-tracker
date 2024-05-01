@@ -5,8 +5,6 @@ const mysql2 = require('mysql2');
 const fs = require('fs');
 const path = require('path');
 const faker = require('@faker-js/faker');
-const { isPromise } = require('util/types');
-const { parseArgs } = require('util');
 
 // Set up database connection using environment variables
 const db = mysql2.createConnection({
@@ -264,7 +262,7 @@ async function addEmployee() {
             }
         ]);
 
-        const sql = 'INSERT INTO employee (first_name, last_name,  role_id, manager_id, department_id) VALUES (?, ?, ?, ?, ?)';
+        const sql = 'INSERT INTO employee (first_name, last_name, department_id, role_id, manager_id) VALUES (?, ?, ?, ?, ?)';
         const params = [answers.first_name, answers.last_name, answers.department_id, answers.role_id, answers.manager_id];
         const result = await db.promise().query(sql, params);
         console.log(`Employee ${answers.first_name} ${answers.last_name} added successfully!`);
@@ -499,5 +497,3 @@ async function exit() {
     console.log('Goodbye!');
     process.exit();
 }
-
-// Main menu function
